@@ -43,7 +43,7 @@ public:
 	{
 		LK = Probality::normal;
 	}
-	CFact(CAssertion _cf, Probality k) : CAssertion(_cf), LK(k) {}
+	CFact(Probality k ,CAssertion _cf ) : CAssertion(_cf), LK(k) {}
 	 
 	LikellyResult Valida(const CAssertion& c_assertion) const;
  
