@@ -28,7 +28,7 @@ IVP __not_is(IJJ jj)
 }
 
 
-bool   teste_1()
+bool   teste_1a()
 {
 	CEngine* cint = makeEngine();
 
@@ -36,7 +36,7 @@ bool   teste_1()
 	return cint != nullptr; 
 }
 
-bool   teste_2()
+bool   teste_2a()
 {
 	CEngine* cint = makeEngine();
 	CAssertion q(_book, __is(IJJ("thing")));
@@ -44,7 +44,7 @@ bool   teste_2()
 	return cint->factos.size() > 0;
 }
 
-bool   teste_3()
+bool   teste_3a()
 {
 	CEngine* cint = makeEngine();
 	const CFact q(_book, __is(IJJ("thing")));
@@ -53,7 +53,7 @@ bool   teste_3()
 	return r.value > 0  ;
 }
  
-bool   teste_4()
+bool   teste_4a()
 {
 	CEngine* cint = makeEngine();
 	const CFact fact(_book, __not_is( IJJ("thing")));
@@ -64,7 +64,7 @@ bool   teste_4()
 }
 
 
-bool   teste_5()
+bool   teste_5a()
 {
 	CEngine* cint = makeEngine();
 	const CFact fact(_book, __is(IJJ("thing")));
@@ -74,7 +74,7 @@ bool   teste_5()
 	return r.value == 0;
 }
 
-bool   teste_6()
+bool   teste_6a()
 {
 	CEngine* cint = makeEngine();
 	const CFact fact_1(Probality::never,  CAssertion( _book, __is(IJJ("red"))));
@@ -89,12 +89,12 @@ bool   teste_6()
 bool testes_grammar()
 {
 
-	assert(teste_1());
-	assert(teste_2());
-	assert(teste_3());
-	assert(teste_4());
-	assert(teste_5());
-	assert(teste_6());
+	assert(teste_1a());
+	assert(teste_2a());
+	assert(teste_3a());
+	assert(teste_4a());
+	assert(teste_5a());
+	assert(teste_6a());
     return true;
 }
 
