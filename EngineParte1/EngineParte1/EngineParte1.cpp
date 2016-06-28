@@ -86,7 +86,7 @@ bool   teste_6()
 	LikellyResult r = cint->query(question);
 	return r.value < 0;
 }
-int main()
+bool testes_grammar()
 {
 
 	assert(teste_1());
@@ -95,6 +95,6 @@ int main()
 	assert(teste_4());
 	assert(teste_5());
 	assert(teste_6());
-    return 0;
+    return true;
 }
 

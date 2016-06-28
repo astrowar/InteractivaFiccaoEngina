@@ -153,6 +153,8 @@
   <ItemGroup>
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="EngineParte1.cpp" />
+    <ClCompile Include="EngineParte2.cpp" />
+    <ClCompile Include="mian.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
