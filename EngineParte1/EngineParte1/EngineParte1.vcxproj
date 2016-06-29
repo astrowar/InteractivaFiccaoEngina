@@ -145,19 +145,26 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CDefinition.h" />
+    <ClInclude Include="CEnumType.h" />
+    <ClInclude Include="CSetType.h" />
+    <ClInclude Include="CValueBase.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Grammar.h" />
     <ClInclude Include="Interprter.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TextValue.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CSetType.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="EngineParte1.cpp" />
     <ClCompile Include="EngineParte2.cpp" />
     <ClCompile Include="Interprter.cpp" />
     <ClCompile Include="mian.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="TextValue.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

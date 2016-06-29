@@ -37,7 +37,7 @@ bool teste_3b()
 	CInterpreter  *cint = makeCInterpreter();
 
 	auto k = cint->addKind("Thing");
-	cint->addDefinition( k,  CDefinitionBool(DefProbality::normal,"small"));
+	cint->addDefinition( k,  CTypeDefinitionBool(DefProbality::normal,"small"));
 	auto obj = cint->addInstancia("book", "Thing");
 
 	float lk = obj->query("small");
@@ -49,7 +49,7 @@ bool teste_4b()
 	CInterpreter  *cint = makeCInterpreter();
 
 	auto k = cint->addKind("Thing");
-	cint->addDefinition(k, CDefinitionBool(mosty, "small","big"));
+	cint->addDefinition(k, CTypeDefinitionBool(mosty, "small","big"));
 	auto _book = cint->addInstancia("book", "Thing");
 
 	auto lk1 = _book->query("red");

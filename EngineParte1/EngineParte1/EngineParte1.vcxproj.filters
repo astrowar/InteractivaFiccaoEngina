@@ -33,6 +33,21 @@
     <ClInclude Include="Interprter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CEnumType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CDefinition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSetType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CValueBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextValue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -51,6 +66,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Interprter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CSetType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextValue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
