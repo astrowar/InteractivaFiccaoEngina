@@ -17,9 +17,8 @@ class SKind:
             return other.name == self.name
         return False
 
-    def define(self, definition ):
+    def define(self, definition):
         self.defines.append(definition)
-
 
 
 class KdThing(SKind):  # Kd => Kind
@@ -32,7 +31,7 @@ class Assertion:
         pass
 
     @staticmethod
-    def kind(noum: SNoum):
+    def kind(noum: SNoum) -> SKind:
         by_instance = instancias.get(noum.noum, None);
         if by_instance is not None:
             return by_instance
@@ -40,17 +39,17 @@ class Assertion:
         return by_kind
 
     @staticmethod
-    def is_kind(noum: SNoum):
+    def is_kind(noum: SNoum) -> bool:
         by_kind = kinds.get(noum.noum, None);
         return by_kind is not None
 
     @staticmethod
-    def is_instance(noum: SNoum):
+    def is_instance(noum: SNoum) -> bool:
         by_instance = instancias.get(noum.noum, None);
         return by_instance is not None
 
     @staticmethod
-    def clear( ):
+    def clear():
         global definitions
         global instancias
         global kinds
@@ -58,9 +57,13 @@ class Assertion:
         instancias = {}
         kinds = {}
 
+    @staticmethod
+    def definitions(kind: SKind) -> list:
+        return kind.defines
+
 
 class SDefineKind(SAtom):
-    def __init__(self, noum: SNoum, kind:SKind = None ):
+    def __init__(self, noum: SNoum, kind: SKind = None):
         super().__init__()
         self.noum = noum
         self.kind = kind
@@ -68,7 +71,7 @@ class SDefineKind(SAtom):
     def eval(self):
         global kinds
         if kinds.get(self.noum.noum, None) is not None:
-            raise KeyError("Kind alweread exist ")
+            raise KeyError("Kind altered exist ")
         kinds[self.noum.noum] = self.kind
 
 
@@ -119,29 +122,44 @@ class SDefinePropertyBase:
         self.value_constraints.append(VConstraint(noum, 10.0))
         return self
 
+
+    @property
+    def defined_keywords(self) -> [SNoum]:
+        return []
+
+    def has_collision(self, d ) -> bool :
+        for i in d.defined_keywords :
+            for j in self.defined_keywords :
+                if i == j:
+                    return True
+
+        return False
+
     def eval(self):
         if not Assertion.is_kind(self.kind_noum):
             raise KeyError("This noum is not a kind")
 
-        #check for collision
-        bkind = kinds.get(self.kind_noum.noum, None);
-
-        bkind.define( self )
+        bkind = kinds.get(self.kind_noum.noum, None)
+        for (bkind )
+        bkind.define(self)
         pass
 
 
 class SDefinePropertyUnary(SDefinePropertyBase):
-    def __init__(self, kind_noum: SNoum, value):
+    def __init__(self, kind_noum: SNoum, value: SNoum):
         super().__init__(kind_noum)
         self.value = value
 
     def eval(self):
-        super(SDefinePropertyUnary,self).eval()
+        super(SDefinePropertyUnary, self).eval()
         pass
+
+    def defined_keywords(self) -> [SNoum]:
+        return self.value
 
 
 class SDefinePropertyBinary(SDefinePropertyBase):
-    def __init__(self, kind_noum: SNoum, value_true, value_false=None):
+    def __init__(self, kind_noum: SNoum, value_true: SNoum, value_false=None):
         super().__init__(kind_noum)
         self.values = [value_true]
         if value_false is None:
@@ -153,12 +171,18 @@ class SDefinePropertyBinary(SDefinePropertyBase):
         super(SDefinePropertyBinary, self).eval()
         pass
 
+    def defined_keywords(self) -> [SNoum]:
+        return self.values
+
 
 class SDefinePropertyEnumerate(SDefinePropertyBase):
-    def __init__(self, kind_noum: SNoum, values):
+    def __init__(self, kind_noum: SNoum, values: [SNoum]):
         super().__init__(kind_noum)
         self.values = values
 
     def eval(self):
         super(SDefinePropertyEnumerate, self).eval()
         pass
+
+    def defined_keywords(self) -> [SNoum]:
+        return self.values
