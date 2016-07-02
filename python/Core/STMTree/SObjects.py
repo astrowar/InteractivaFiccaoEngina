@@ -7,10 +7,11 @@ kinds = {}
 
 
 class SKind:
-    def __init__(self, named: str):
+    def __init__(self, named: str, kind: 'SKind' = None):
         self.name = named
         self.defines = []
         kinds[self.name] = self
+        self.kind = None
 
     def __eq__(self, other):
         if isinstance(other, SKind):
@@ -60,6 +61,13 @@ class Assertion:
     @staticmethod
     def definitions(kind: SKind) -> list:
         return kind.defines
+
+    @staticmethod
+    def contains_noum_in_definitions(kind, n: SNoum):
+        for d in kind.defines:
+            if n.noum in d.defined_keywords:
+                return True
+        return False
 
 
 class SDefineKind(SAtom):
@@ -122,14 +130,13 @@ class SDefinePropertyBase:
         self.value_constraints.append(VConstraint(noum, 10.0))
         return self
 
-
     @property
     def defined_keywords(self) -> [SNoum]:
         return []
 
-    def has_collision(self, d ) -> bool :
-        for i in d.defined_keywords :
-            for j in self.defined_keywords :
+    def has_collision(self, d) -> bool:
+        for i in d.defined_keywords:
+            for j in self.defined_keywords:
                 if i == j:
                     return True
 
@@ -139,8 +146,11 @@ class SDefinePropertyBase:
         if not Assertion.is_kind(self.kind_noum):
             raise KeyError("This noum is not a kind")
 
-        bkind = kinds.get(self.kind_noum.noum, None)
-        for (bkind )
+        bkind = Assertion.kind(self.kind_noum)
+        for ds in bkind.defines:
+            if self.has_collision(ds):
+                raise Exception("definition noum alread exist")
+
         bkind.define(self)
         pass
 
