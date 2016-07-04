@@ -1,11 +1,15 @@
-from typing import List
+from typing import List, Union
 
 
 class SAtom:
     def __init__(self):
         pass
 
-    def eval(self, local_args, memm):
+    def eval(self, local_args):
+        """
+
+        :type local_args: [SAtom]
+        """
         raise Exception("abstract call")
 
     @property
@@ -14,6 +18,42 @@ class SAtom:
 
 
 SNone = SAtom()
+
+
+class SMemory:
+    """ classe que organiza a memoria de variaveis """
+
+    def __init__(self):
+        self.buff = {}
+        pass
+
+    def __getitem__(self, item: str) -> SAtom:
+        return self.buff[item]
+
+    def __setitem__(self, key:  Union[str,'SVar'], value: SAtom) -> object:
+        if isinstance(key, SVar):
+            self.buff[key.name] = value
+        else:
+            self.buff[key] = value
+
+    def get_variable(self, name: str):
+        return self[name]
+
+    def set_variable(self, name: str, aref: SAtom):
+        self[name] = aref
+
+
+class SMemoryContext(SMemory):
+    def __init__(self, back_context: SMemory = None):
+        super().__init__()
+        self.prev = back_context
+
+    def __getitem__(self, item: str) -> SAtom:
+        if item in self.buff:
+            return self.buff[item]
+        if self.prev is not None:
+            return self.prev[item]
+        return None
 
 
 class SStack:
@@ -34,11 +74,32 @@ class SStack:
         return self.variables.get(name, None)
 
 
-class SNoum:
+class SContextEvaluation:
+    def __init__(self, arguments: [SAtom], memory: SMemoryContext):
+        self.arguments = arguments
+        self.memory = memory
+
+    def get_variable_value(self, item: str) -> SAtom:
+        return self.memory.get_variable(item)
+
+    def set_variable_value(self, item: str, value: SAtom):
+        self.memory.set_variable(item, value)
+
+    def get_argument(self, index: int) -> SAtom:
+        return self.arguments[index]
+
+
+class SValue(SAtom):
+    def __init__(self):
+        super().__init__()
+
+
+class SNoum(SValue):
     def __init__(self, _noum: str):
+        super().__init__()
         self.noum = _noum
 
-    def eval(self, local_args, memm):
+    def eval(self, local_args):
         return self.noum
 
     def __repr__(self):
@@ -50,12 +111,12 @@ class SNoum:
         return False
 
 
-class SNumber(SAtom):
+class SNumber(SValue):
     def __init__(self, _value: int) -> None:
         super().__init__()
         self.value = _value
 
-    def eval(self, local_args, memm):
+    def eval(self, local_args):
         return self.value
 
     def __repr__(self):
@@ -80,8 +141,8 @@ class SArgument(SAtom):
             return self.argIndex == other.argIndex
         return False
 
-    def eval(self, local_args, memory):
-        a1 = local_args[self.argIndex]
+    def eval(self, local_args:SContextEvaluation):
+        a1 = local_args.get_argument(self.argIndex)
         # if isinstance(a1, SAtom):
         #     return a1.eval(local_args, memory)
         return a1
@@ -96,13 +157,13 @@ class SAdd(SAtom):
     def items(self):
         return self.args
 
-    def eval(self, local_args, memory):
+    def eval(self, local_args):
         a1 = self.args[0]
         a2 = self.args[1]
         if isinstance(a1, SAtom):
-            a1 = self.args[0].eval(local_args, memory)
+            a1 = self.args[0].eval(local_args)
         if isinstance(a2, SAtom):
-            a2 = self.args[1].eval(local_args, memory)
+            a2 = self.args[1].eval(local_args)
 
         return SNumber(a1 + a2)
 
@@ -120,35 +181,38 @@ const_types = [SNumber, SNoum]
 
 
 class SVar(SAtom):
-    def __init__(self, name, memm: SStack):
+    def __init__(self, name):
         super().__init__()
         self.name = name
-        self.memm = memm
 
     @property
     def items(self):
-        mref = self.memm.get_variable(self.name)
-        return mref.items
+        return []
 
-    def eval(self, arguments, memm):
-        return self.ref.eval(arguments, memm)
+    def eval(self, arguments):
+        mref = arguments.memory.get_variable(self.name)
+        if isinstance(mref , SValue):
+            return mref
+        return mref.eval(arguments )
 
-    def set_reference(self, aref: SAtom):
-        self.memm.set_variable(self.name, aref)
 
-    def set_value(self, aref: SAtom):
-        if aref in const_types:
-            self.memm.set_variable(self.name, aref)
-        else:
-            raise TypeError("only Const Types is alowed")
+    #def set_reference(self, aref: SAtom):
+    #    ctx.memory.set_variable(self.name, aref)
+
+    # def set_value(self, aref: SAtom):
+    #     if isinstance(aref, SValue):
+    #         ctx.memory.set_variable(self.name, aref)
+    #     else:
+    #         raise TypeError("only Const Types is alowed")
 
     def __repr__(self):
-        mref = self.memm.get_variable(self.name)
-        return self.__class__.__name__ + " " + self.name + "=" + mref.__repr__()
+        # mref = ctx.memory.get_variable(self.name)
+        return self.__class__.__name__ + " " + self.name
 
     def __eq__(self, other: SAtom):
-        mref = self.memm.get_variable(self.name)
-        return mref == other
+        if isinstance(other, SVar):
+            return other.name == self.name
+        raise Exception("unable to compare variable per se")
 
 
 class SFunc(SAtom):
@@ -160,10 +224,10 @@ class SFunc(SAtom):
     def items(self):
         return self.body
 
-    def eval(self, arguments, memm):
-        next_args = [aa.eval(arguments, memm) for aa in arguments]
+    def eval(self, arguments):
+        next_args = [aa.eval(arguments) for aa in arguments]
         for b in self.body:
-            yield b.eval(next_args, memm)
+            yield b.eval(next_args)
 
 
 class SList(SAtom):
@@ -187,18 +251,11 @@ class SAll(SAtom):
         self.pred = pred
         self.lista = _lista
 
-    def eval(self, local_args, memm):
+    def eval(self, local_args):
         for item in self.lista.items:
-            if not self.pred.eval([item], memm):
+            if not self.pred.eval([item]):
                 return False
         return True
 
 
-afunc = SFunc([SAdd(SArgument(0), SArgument(1))])  # f(x,y) =  x + y
-# print(afunc.fcall([SNoum("a"), SNoum("b")]))
 
-print(SArgument(0).eval([SNumber(1), SNumber(2)], None))
-print(SArgument(1).eval([SNumber(1), SNumber(2)], None))
-
-for k in afunc.eval([SNumber(1), SNumber(1)], {}):  # f(1,2)
-    print(k)

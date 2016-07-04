@@ -49,6 +49,6 @@ class NoumTestProperty(unittest.TestCase):
         SDefineKind(SNoum("Book"), KdThing()).eval()
         values = [SNoum("small"), SNoum("big"), SNoum("normal")]
         SDefinePropertyEnumerate(SNoum("Book"), values).usually(SNoum("normal")).eval()
-        print (Assertion.definitions(Assertion.kind(SNoum("Book")  ) ))
+        print(Assertion.definitions(Assertion.kind(SNoum("Book"))))
         with self.assertRaises(Exception):
-           SDefinePropertyEnumerate(SNoum("Book"), values).never(SNoum("big")).eval()  # error
+            SDefinePropertyEnumerate(SNoum("Book"), values).never(SNoum("big")).eval()  # error

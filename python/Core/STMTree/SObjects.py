@@ -33,20 +33,20 @@ class Assertion:
 
     @staticmethod
     def kind(noum: SNoum) -> SKind:
-        by_instance = instancias.get(noum.noum, None);
+        by_instance = instancias.get(noum.noum, None)
         if by_instance is not None:
             return by_instance
-        by_kind = kinds.get(noum.noum, None);
+        by_kind = kinds.get(noum.noum, None)
         return by_kind
 
     @staticmethod
     def is_kind(noum: SNoum) -> bool:
-        by_kind = kinds.get(noum.noum, None);
+        by_kind = kinds.get(noum.noum, None)
         return by_kind is not None
 
     @staticmethod
     def is_instance(noum: SNoum) -> bool:
-        by_instance = instancias.get(noum.noum, None);
+        by_instance = instancias.get(noum.noum, None)
         return by_instance is not None
 
     @staticmethod
