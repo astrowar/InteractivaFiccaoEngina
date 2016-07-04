@@ -30,7 +30,7 @@ class SMemory:
     def __getitem__(self, item: str) -> SAtom:
         return self.buff[item]
 
-    def __setitem__(self, key:  Union[str,'SVar'], value: SAtom) -> object:
+    def __setitem__(self, key: Union[str, 'SVar'], value: SAtom) -> object:
         if isinstance(key, SVar):
             self.buff[key.name] = value
         else:
@@ -79,11 +79,16 @@ class SContextEvaluation:
         self.arguments = arguments
         self.memory = memory
 
-    def get_variable_value(self, item: str) -> SAtom:
+    def get_variable_value(self, item: Union[str, 'SVar']) -> SAtom:
+        if isinstance(item, SVar):
+            return self.memory.get_variable(item.name)
         return self.memory.get_variable(item)
 
-    def set_variable_value(self, item: str, value: SAtom):
-        self.memory.set_variable(item, value)
+    def set_variable_value(self, item: Union[str, 'SVar'], value: SAtom):
+        if isinstance(item, SVar):
+            self.memory.set_variable(item.name, value)
+        else:
+            self.memory.set_variable(item, value)
 
     def get_argument(self, index: int) -> SAtom:
         return self.arguments[index]
@@ -141,7 +146,7 @@ class SArgument(SAtom):
             return self.argIndex == other.argIndex
         return False
 
-    def eval(self, local_args:SContextEvaluation):
+    def eval(self, local_args: SContextEvaluation):
         a1 = local_args.get_argument(self.argIndex)
         # if isinstance(a1, SAtom):
         #     return a1.eval(local_args, memory)
@@ -191,12 +196,11 @@ class SVar(SAtom):
 
     def eval(self, arguments):
         mref = arguments.memory.get_variable(self.name)
-        if isinstance(mref , SValue):
+        if isinstance(mref, SValue):
             return mref
-        return mref.eval(arguments )
+        return mref.eval(arguments)
 
-
-    #def set_reference(self, aref: SAtom):
+    # def set_reference(self, aref: SAtom):
     #    ctx.memory.set_variable(self.name, aref)
 
     # def set_value(self, aref: SAtom):
@@ -256,6 +260,4 @@ class SAll(SAtom):
             if not self.pred.eval([item]):
                 return False
         return True
-
-
 

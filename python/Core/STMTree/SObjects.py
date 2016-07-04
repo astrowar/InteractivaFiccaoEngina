@@ -1,25 +1,23 @@
 from STMTree import SStack, SAtom, SNoum
 
-memoryPool = SStack()
-definitions = {}
-instancias = {}
-kinds = {}
-
 
 class SKind:
-    def __init__(self, named: str, kind: 'SKind' = None):
+    def __init__(self, named: str, kind=None):
+        """
+
+        :type kind: SKind
+        """
+
         self.name = named
-        self.defines = []
-        kinds[self.name] = self
-        self.kind = None
+
+        self.kind = kind
 
     def __eq__(self, other):
         if isinstance(other, SKind):
             return other.name == self.name
         return False
 
-    def define(self, definition):
-        self.defines.append(definition)
+
 
 
 class KdThing(SKind):  # Kd => Kind
@@ -27,70 +25,31 @@ class KdThing(SKind):  # Kd => Kind
         super().__init__("Thing")
 
 
-class Assertion:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def kind(noum: SNoum) -> SKind:
-        by_instance = instancias.get(noum.noum, None)
-        if by_instance is not None:
-            return by_instance
-        by_kind = kinds.get(noum.noum, None)
-        return by_kind
-
-    @staticmethod
-    def is_kind(noum: SNoum) -> bool:
-        by_kind = kinds.get(noum.noum, None)
-        return by_kind is not None
-
-    @staticmethod
-    def is_instance(noum: SNoum) -> bool:
-        by_instance = instancias.get(noum.noum, None)
-        return by_instance is not None
-
-    @staticmethod
-    def clear():
-        global definitions
-        global instancias
-        global kinds
-        definitions = {}
-        instancias = {}
-        kinds = {}
-
-    @staticmethod
-    def definitions(kind: SKind) -> list:
-        return kind.defines
-
-    @staticmethod
-    def contains_noum_in_definitions(kind, n: SNoum):
-        for d in kind.defines:
-            if n.noum in d.defined_keywords:
-                return True
-        return False
+class SCommand(SAtom):
+    pass
 
 
-class SDefineKind(SAtom):
+class SDefineKind(SCommand):
     def __init__(self, noum: SNoum, kind: SKind = None):
         super().__init__()
         self.noum = noum
         self.kind = kind
 
-    def eval(self):
-        global kinds
-        if kinds.get(self.noum.noum, None) is not None:
-            raise KeyError("Kind altered exist ")
-        kinds[self.noum.noum] = self.kind
+        # def eval(self):
+        #
+        #     if kinds.get(self.noum.noum, None) is not None:
+        #         raise KeyError("Kind altered exist ")
+        #     kinds[self.noum.noum] = self.kind
 
 
-class SDefine(SAtom):
-    def __init__(self, noum: SNoum, kind):
+class SDefineInstancia(SCommand):
+    def __init__(self, noum: SNoum, kind:SKind):
         super().__init__()
         self.noum = noum
         self.kind = kind
 
-    def eval(self):
-        instancias[self.noum.noum] = self.kind
+        # def eval(self):
+        #     instancias[self.noum.noum] = self.kind
 
 
 def noum_negate(x: SNoum) -> SNoum:
@@ -103,9 +62,10 @@ class VConstraint(object):
         self.weight = w
 
 
-class SDefinePropertyBase:
+class SDefinePropertyBase(SCommand):
     def __init__(self, kind_noum: SNoum):
 
+        super().__init__()
         self.kind_noum = kind_noum
         self.value_constraints = []
 
@@ -135,24 +95,24 @@ class SDefinePropertyBase:
         return []
 
     def has_collision(self, d) -> bool:
-        for i in d.defined_keywords:
-            for j in self.defined_keywords:
+        for i in d.defined_keywords():
+            for j in self.defined_keywords():
                 if i == j:
                     return True
 
         return False
 
-    def eval(self):
-        if not Assertion.is_kind(self.kind_noum):
-            raise KeyError("This noum is not a kind")
-
-        bkind = Assertion.kind(self.kind_noum)
-        for ds in bkind.defines:
-            if self.has_collision(ds):
-                raise Exception("definition noum alread exist")
-
-        bkind.define(self)
-        pass
+        # def eval(self):
+        #     if not Assertion.is_kind(self.kind_noum):
+        #         raise KeyError("This noum is not a kind")
+        #
+        #     bkind = Assertion.kind(self.kind_noum)
+        #     for ds in bkind.defines:
+        #         if self.has_collision(ds):
+        #             raise Exception("definition noum alread exist")
+        #
+        #     bkind.define(self)
+        #     pass
 
 
 class SDefinePropertyUnary(SDefinePropertyBase):
